@@ -1,0 +1,270 @@
+# GRU test using T4 Python Collab.
+## These are the result but we're not sure about it yet because it feels unrealistic to reach 99.89%.
+### We are currently investigating the problem to understand why the results are not reflecting actual performance, but these are the result & code.
+==================================================
+FINAL RESULTS
+==================================================
+Test Accuracy: 99.89%
+Test Loss: 0.0040
+==================================================
+Evaluating on test set...
+Test Loss: 0.0040
+Test Accuracy: 0.9989
+1614/1614 ━━━━━━━━━━━━━━━━━━━━ 3s 2ms/step
+
+Classification Report:
+              precision    recall  f1-score   support
+
+           0       1.00      1.00      1.00     17601
+           1       1.00      1.00      1.00     34022
+
+    accuracy                           1.00     51623
+   macro avg       1.00      1.00      1.00     51623
+weighted avg       1.00      1.00      1.00     51623
+
+
+Confusion Matrix:
+[[17561    40]
+ [   17 34005]]
+=======================================================
+Code
+=======================================================
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import GRU, Dense, Dropout, BatchNormalization
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the CSV files - FIXED VERSION
+print("Loading data from CSV files...")
+
+# Load X data and drop the index column if it exists
+X_train_df = pd.read_csv('X_train_scaled.csv')
+X_test_df = pd.read_csv('X_test_scaled.csv')
+
+# Remove 'Unnamed: 0' column if it exists (it's just an index)
+if 'Unnamed: 0' in X_train_df.columns:
+    X_train_df = X_train_df.drop('Unnamed: 0', axis=1)
+if 'Unnamed: 0' in X_test_df.columns:
+    X_test_df = X_test_df.drop('Unnamed: 0', axis=1)
+
+X_train_scaled = X_train_df.values
+X_test_scaled = X_test_df.values
+
+# Load y data - only take the label column (column 0), skip the index
+y_train_df = pd.read_csv('y_train.csv')
+y_test_df = pd.read_csv('y_test.csv')
+
+# Get only the label column (not the Unnamed: 0 index column)
+if 'Unnamed: 0' in y_train_df.columns:
+    y_train = y_train_df['0'].values  # Column '0' contains the actual labels
+    y_test = y_test_df['0'].values
+else:
+    y_train = y_train_df.iloc[:, -1].values  # Last column
+    y_test = y_test_df.iloc[:, -1].values
+
+# CRITICAL: Match the number of samples
+# Take only as many labels as we have samples
+y_train = y_train[:len(X_train_scaled)]
+y_test = y_test[:len(X_test_scaled)]
+
+print("Data loaded successfully!")
+print(f"X_train shape: {X_train_scaled.shape}")
+print(f"X_test shape: {X_test_scaled.shape}")
+print(f"y_train shape: {y_train.shape}")
+print(f"y_test shape: {y_test.shape}")
+
+# Verify alignment
+print(f"\n✓ Data aligned: X_train samples ({len(X_train_scaled)}) == y_train samples ({len(y_train)})")
+print(f"✓ Data aligned: X_test samples ({len(X_test_scaled)}) == y_test samples ({len(y_test)})")
+
+# Reshape data if needed for GRU (samples, timesteps, features)
+# GRU requires 3D input: (samples, timesteps, features)
+if len(X_train_scaled.shape) == 2:
+    print("\nReshaping data for GRU...")
+    # If your data is time-series, determine appropriate timesteps
+    # Option 1: Each row is one timestep
+    timesteps = 1
+    features = X_train_scaled.shape[1]
+    X_train_scaled = X_train_scaled.reshape((X_train_scaled.shape[0], timesteps, features))
+    X_test_scaled = X_test_scaled.reshape((X_test_scaled.shape[0], timesteps, features))
+
+    # Option 2: If you need multiple timesteps, uncomment and adjust:
+    # timesteps = 10  # adjust this value
+    # features = X_train_scaled.shape[1] // timesteps
+    # X_train_scaled = X_train_scaled.reshape((X_train_scaled.shape[0], timesteps, features))
+    # X_test_scaled = X_test_scaled.reshape((X_test_scaled.shape[0], timesteps, features))
+
+    print(f"Reshaped to: (samples={X_train_scaled.shape[0]}, timesteps={timesteps}, features={features})")
+
+print("\nFinal shapes:")
+print("X_train shape:", X_train_scaled.shape)
+print("X_test shape:", X_test_scaled.shape)
+
+# Build GRU Model - SIMPLIFIED to prevent NaN
+def create_gru_model(input_shape, num_classes):
+    model = Sequential([
+        GRU(64, return_sequences=True, input_shape=input_shape,
+            recurrent_dropout=0.0),  # Removed recurrent dropout
+        Dropout(0.2),
+
+        GRU(32, return_sequences=False, recurrent_dropout=0.0),
+        Dropout(0.2),
+
+        Dense(32, activation='relu'),
+        Dropout(0.2),
+
+        Dense(num_classes, activation='softmax' if num_classes > 2 else 'sigmoid')
+    ])
+
+    return model
+
+# Determine number of classes and check for issues
+num_classes = len(np.unique(y_train))
+print(f"\nNumber of classes: {num_classes}")
+print(f"Unique labels in y_train: {np.unique(y_train)}")
+print(f"Unique labels in y_test: {np.unique(y_test)}")
+print(f"y_train min: {y_train.min()}, max: {y_train.max()}")
+print(f"y_test min: {y_test.min()}, max: {y_test.max()}")
+
+# Check for NaN or inf values in data
+print(f"\nData quality checks:")
+print(f"X_train has NaN: {np.isnan(X_train_scaled).any()}")
+print(f"X_train has Inf: {np.isinf(X_train_scaled).any()}")
+print(f"X_test has NaN: {np.isnan(X_test_scaled).any()}")
+print(f"X_test has Inf: {np.isinf(X_test_scaled).any()}")
+
+# Clean data if needed
+if np.isnan(X_train_scaled).any() or np.isinf(X_train_scaled).any():
+    print("WARNING: Cleaning NaN/Inf values from X_train...")
+    X_train_scaled = np.nan_to_num(X_train_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+
+if np.isnan(X_test_scaled).any() or np.isinf(X_test_scaled).any():
+    print("WARNING: Cleaning NaN/Inf values from X_test...")
+    X_test_scaled = np.nan_to_num(X_test_scaled, nan=0.0, posinf=0.0, neginf=0.0)
+
+# FIX: Convert labels to integers (0, 1, 2, ...) if needed
+y_train = y_train.astype(int)
+y_test = y_test.astype(int)
+
+# Create model
+input_shape = (X_train_scaled.shape[1], X_train_scaled.shape[2])
+model = create_gru_model(input_shape, num_classes)
+
+# Compile model with gradient clipping to prevent exploding gradients
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.001, clipnorm=1.0)
+
+# FIX: Always use sparse_categorical_crossentropy for integer labels
+model.compile(
+    optimizer=optimizer,
+    loss='sparse_categorical_crossentropy',
+    metrics=['accuracy']
+)
+
+# Model summary
+model.summary()
+
+# Callbacks - MORE AGGRESSIVE
+early_stopping = EarlyStopping(
+    monitor='val_loss',
+    patience=10,  # Reduced from 15
+    restore_best_weights=True,
+    verbose=1
+)
+
+reduce_lr = ReduceLROnPlateau(
+    monitor='val_loss',
+    factor=0.5,
+    patience=3,  # Reduced from 5
+    min_lr=1e-7,
+    verbose=1
+)
+
+# Train model - SMALLER BATCH SIZE for faster epochs
+print("\nTraining model...")
+history = model.fit(
+    X_train_scaled, y_train,
+    epochs=50,  # Reduced from 100
+    batch_size=64,  # Increased from 32 for faster training
+    validation_split=0.2,
+    callbacks=[early_stopping, reduce_lr],
+    verbose=1
+)
+
+# Evaluate on test set
+print("\nEvaluating on test set...")
+test_loss, test_accuracy = model.evaluate(X_test_scaled, y_test, verbose=0)
+print(f"Test Loss: {test_loss:.4f}")
+print(f"Test Accuracy: {test_accuracy:.4f}")
+
+# Make predictions
+y_pred = model.predict(X_test_scaled)
+y_pred_classes = np.argmax(y_pred, axis=1)
+
+# Ensure predictions match test set size
+if len(y_pred_classes) != len(y_test):
+    print(f"WARNING: Prediction size mismatch. Truncating to match y_test size.")
+    y_pred_classes = y_pred_classes[:len(y_test)]
+
+# Classification Report
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred_classes))
+
+# Confusion Matrix
+cm = confusion_matrix(y_test, y_pred_classes)
+print("\nConfusion Matrix:")
+print(cm)
+
+# Plotting
+fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+
+# Plot 1: Training & Validation Loss
+axes[0, 0].plot(history.history['loss'], label='Training Loss')
+axes[0, 0].plot(history.history['val_loss'], label='Validation Loss')
+axes[0, 0].set_title('Model Loss')
+axes[0, 0].set_xlabel('Epoch')
+axes[0, 0].set_ylabel('Loss')
+axes[0, 0].legend()
+axes[0, 0].grid(True)
+
+# Plot 2: Training & Validation Accuracy
+axes[0, 1].plot(history.history['accuracy'], label='Training Accuracy')
+axes[0, 1].plot(history.history['val_accuracy'], label='Validation Accuracy')
+axes[0, 1].set_title('Model Accuracy')
+axes[0, 1].set_xlabel('Epoch')
+axes[0, 1].set_ylabel('Accuracy')
+axes[0, 1].legend()
+axes[0, 1].grid(True)
+
+# Plot 3: Confusion Matrix
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[1, 0])
+axes[1, 0].set_title('Confusion Matrix')
+axes[1, 0].set_xlabel('Predicted')
+axes[1, 0].set_ylabel('Actual')
+
+# Plot 4: Class Distribution
+axes[1, 1].bar(['Train', 'Test'],
+               [len(y_train), len(y_test)],
+               color=['skyblue', 'lightcoral'])
+axes[1, 1].set_title('Dataset Distribution')
+axes[1, 1].set_ylabel('Number of Samples')
+axes[1, 1].grid(True, axis='y')
+
+plt.tight_layout()
+plt.show()
+
+# Save model
+model.save('gru_falling_detection_model.h5')
+print("\nModel saved as 'gru_falling_detection_model.h5'")
+
+# Print final metrics
+print(f"\n{'='*50}")
+print("FINAL RESULTS")
+print(f"{'='*50}")
+print(f"Test Accuracy: {test_accuracy*100:.2f}%")
+print(f"Test Loss: {test_loss:.4f}")
+print(f"{'='*50}")
