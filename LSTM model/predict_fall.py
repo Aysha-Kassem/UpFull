@@ -1,73 +1,77 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model
-import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# Import data preparation function to get the test set
-# Must be in the same directory as data_preprocessor.py
-from data_preprocessor import prepare_fall_detection_data 
+from data_preprocessor import prepare_fall_detection_data
 
-def predict_and_evaluate(model_path='fall_detection_model.h5'):
-    """
-    Loads the saved model, makes predictions on the test set, and reports results.
-    It also plots the Confusion Matrix.
-    """
+
+def predict_and_evaluate(model_path='best_bilstm_fall_detection_model.keras', threshold=0.42):
     try:
-        # Load the saved model
         model = load_model(model_path)
-        print(f"✅ Model loaded successfully from {model_path}")
-        
+        print(f"✅ Model loaded from {model_path}")
     except Exception as e:
-        print(f"FATAL ERROR: Could not load the model from {model_path}. Error: {e}")
-        print("Please ensure you have run 'train_model.py' successfully to save the model.")
+        print(f"❌ Could not load model: {e}")
         return
 
-    # Prepare data again to get the X_test and y_test splits (using the same settings)
+    # Load test data
     _, X_test, _, y_test = prepare_fall_detection_data(
-        filepath='DataSet.csv', 
-        time_steps=50, 
-        test_size=0.2, 
-        random_state=42
+        time_steps=50,
+        step_size=5
     )
 
     if X_test is None:
-        print("Error: Test data could not be prepared.")
         return
 
-    print("\n--- Making Predictions on Test Data ---")
-    
-    # Get probability scores
-    y_pred_probs = model.predict(X_test, verbose=1)
-    
-    # Convert probabilities to binary predictions (0 or 1)
-    # Threshold is 0.5: if probability > 0.5, predict Fall (1), otherwise Not Fall (0)
-    y_pred = (y_pred_probs > 0.5).astype(int)
+    # Predict
+    y_probs = model.predict(X_test)
+    y_pred = (y_probs > threshold).astype(int)
 
-    # --- Classification Report (detailed metrics) ---
-    print("\n--- Classification Report ---")
-    print("This shows detailed performance for both 'Not Fall' (0) and 'Fall' (1).")
-    print(classification_report(y_test, y_pred, target_names=['Not Fall (0)', 'Fall (1)']))
+    # Ensure correct shapes
+    y_test_flat = y_test.ravel()
+    y_pred_flat = y_pred.ravel()
 
-    # --- Confusion Matrix Plot ---
-    cm = confusion_matrix(y_test, y_pred)
-    
-    plt.figure(figsize=(8, 7))
+    # Classification report
+    print(f"\n--- Classification Report (Threshold={threshold}) ---")
+    print(classification_report(y_test_flat, y_pred_flat, target_names=["Not Fall", "Fall"]))
+
+    # Confusion matrix
+    cm = confusion_matrix(y_test_flat, y_pred_flat)
+
+    plt.figure(figsize=(7, 6))
     sns.heatmap(
-        cm, 
-        annot=True, # Show the numbers in the squares
-        fmt='d', # Format numbers as integers
-        cmap='Blues', # Color scheme
-        xticklabels=['Predicted 0 (Not Fall)', 'Predicted 1 (Fall)'], 
-        yticklabels=['Actual 0 (Not Fall)', 'Actual 1 (Fall)']
+        cm,
+        annot=True,
+        fmt="d",
+        cmap="Blues",
+        xticklabels=["Pred 0", "Pred 1"],
+        yticklabels=["True 0", "True 1"]
     )
-    plt.title('Confusion Matrix for Fall Detection')
-    plt.ylabel('Actual Label')
-    plt.xlabel('Predicted Label')
-    plt.show() # Display the plot
-    print("✅ Prediction and Visualization Complete.")
+    plt.title(f"Confusion Matrix (Threshold={threshold})")
+    plt.xlabel("Predicted")
+    plt.ylabel("Actual")
+    plt.show()
+
+    # Calculate Error Rate correctly ✅
+    total_samples = len(y_test_flat)
+    correct_predictions = (y_pred_flat == y_test_flat).sum()
+    incorrect_predictions = (y_pred_flat != y_test_flat).sum()
+
+    accuracy = correct_predictions / total_samples
+    error_rate = incorrect_predictions / total_samples
+
+    print("\n--- Additional Metrics ---")
+    print(f"✅ Total Samples: {total_samples}")
+    print(f"✅ Correct Predictions: {correct_predictions}")
+    print(f"❌ Incorrect Predictions: {incorrect_predictions}")
+    print(f"📌 Accuracy: {accuracy * 100:.2f}%")
+    print(f"📌 Error Rate: {error_rate * 100:.2f}%")
 
 
-if __name__ == '__main__':
-    predict_and_evaluate()
+if __name__ == "__main__":
+    predict_and_evaluate(
+        model_path="best_bilstm_fall_detection_model.keras",
+        threshold=0.42
+    )
+
