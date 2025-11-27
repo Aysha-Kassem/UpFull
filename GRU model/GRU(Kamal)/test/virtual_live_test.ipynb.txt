@@ -1,0 +1,100 @@
+import numpy as np
+import time
+import joblib
+from tensorflow.keras.models import load_model
+import matplotlib.pyplot as plt
+from collections import deque
+
+# ============================================================
+# 1) Load model + scaler
+# ============================================================
+MODEL_PATH = "fall_detection_gru_model_kamal.h5"
+SCALER_PATH = "scaler.pkl"
+
+print("Loading model & scaler...")
+model = load_model(MODEL_PATH)
+scaler = joblib.load(SCALER_PATH)
+print("✓ Model loaded")
+print("✓ Scaler loaded")
+
+# ============================================================
+# 2) Synthetic IMU Signal Generator (Idle / Walk / Run / Fall)
+# ============================================================
+def generate_imu_sample(mode="idle"):
+    if mode == "idle":
+        ax, ay, az = np.random.normal(0, 0.02, 3)
+        gx, gy, gz = np.random.normal(0, 1.0, 3)
+
+    elif mode == "walk":
+        ax = np.sin(time.time()*3) * 0.2 + np.random.normal(0, 0.05)
+        ay = np.cos(time.time()*3) * 0.2 + np.random.normal(0, 0.05)
+        az = 1 + np.random.normal(0, 0.05)
+        gx, gy, gz = np.random.normal(0, 10, 3)
+
+    elif mode == "run":
+        ax = np.sin(time.time()*6) * 0.5 + np.random.normal(0, 0.1)
+        ay = np.cos(time.time()*6) * 0.5 + np.random.normal(0, 0.1)
+        az = 1.2 + np.random.normal(0, 0.1)
+        gx, gy, gz = np.random.normal(0, 25, 3)
+
+    elif mode == "fall":
+        # Huge spikes — realistic fall pattern
+        ax = np.random.uniform(-3, 3)
+        ay = np.random.uniform(-3, 3)
+        az = np.random.uniform(-3, 4)
+        gx = np.random.uniform(-300, 300)
+        gy = np.random.uniform(-300, 300)
+        gz = np.random.uniform(-300, 300)
+
+    return np.array([ax, ay, az, gx, gy, gz])
+
+# ============================================================
+# 3) Real-Time Prediction Loop
+# ============================================================
+WINDOW = 50
+buffer = deque(maxlen=WINDOW)
+
+mode = "fall"   # ← change to: idle / walk / run / fall
+
+print(f"\n===== Real-Time Detection Started ({mode.upper()}) =====")
+
+fall_probs = []
+
+for step in range(500):   # simulate 500 samples ≈ 50 seconds
+    # 1) Generate synthetic IMU read
+    sample = generate_imu_sample(mode)
+
+    # 2) Scale the sample
+    scaled = scaler.transform(sample.reshape(1, -1))
+
+    # 3) Add to sliding window
+    buffer.append(scaled.flatten())
+
+    # 4) If window full → predict
+    if len(buffer) == WINDOW:
+        X_window = np.array(buffer).reshape(1, WINDOW, 6)
+
+        prob = model.predict(X_window, verbose=0)[0][0]
+        fall_probs.append(prob)
+
+        label = "FALL" if prob > 0.5 else "NON-FALL"
+
+        print(f"[{step}] Prob={prob:.4f} → {label}")
+
+    time.sleep(0.1)
+
+print("\n===== Detection Finished =====")
+
+
+# ============================================================
+# 4) Plot Fall Probability Over Time
+# ============================================================
+plt.figure(figsize=(12, 4))
+plt.plot(fall_probs, label="Fall Probability")
+plt.axhline(0.5, color="red", linestyle="--", label="Threshold = 0.5")
+plt.title("Real-Time Fall Prediction")
+plt.xlabel("Time (Windows)")
+plt.ylabel("Prob")
+plt.legend()
+plt.grid()
+plt.show()
