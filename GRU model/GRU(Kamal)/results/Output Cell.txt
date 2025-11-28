@@ -1,0 +1,222 @@
+ ✓ Using existing file: DataSet.csv
+============================================================
+PREPROCESSING DATA
+============================================================
+✓ Data loaded. Total samples: 294678
+✓ Sequences created. Shape: (294628, 50, 6)
+✓ Train set: 235702 samples
+✓ Test set: 58926 samples
+
+✓ Preprocessing complete!
+============================================================
+BUILDING OPTIMIZED MODEL
+============================================================
+/usr/local/lib/python3.12/dist-packages/keras/src/layers/rnn/bidirectional.py:107: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.
+  super().__init__(**kwargs)
+Model: "Fall_Detection_GRU_Optimized"
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┓
+┃ Layer (type)                    ┃ Output Shape           ┃       Param # ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━┩
+│ bidirectional_4 (Bidirectional) │ (None, 50, 128)        │        27,648 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_15 (Dropout)            │ (None, 50, 128)        │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ gru_11 (GRU)                    │ (None, 32)             │        15,552 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_16 (Dropout)            │ (None, 32)             │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_10 (Dense)                │ (None, 32)             │         1,056 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dropout_17 (Dropout)            │ (None, 32)             │             0 │
+├─────────────────────────────────┼────────────────────────┼───────────────┤
+│ dense_11 (Dense)                │ (None, 1)              │            33 │
+└─────────────────────────────────┴────────────────────────┴───────────────┘
+
+ Total params: 44,289 (173.00 KB)
+
+ Trainable params: 44,289 (173.00 KB)
+
+ Non-trainable params: 0 (0.00 B)
+
+
+✓ Optimized model built successfully!
+
+============================================================
+TRAINING OPTIMIZED MODEL
+============================================================
+Class weights: {0: np.float64(1.4662461431273017), 1: np.float64(0.758733244917142)}
+
+Epoch 1/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 15ms/step - accuracy: 0.8269 - loss: 0.4210 - precision: 0.8707 - recall: 0.8638 - val_accuracy: 0.9317 - val_loss: 0.1922 - val_precision: 0.9328 - val_recall: 0.9660 - learning_rate: 0.0010
+Epoch 2/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9320 - loss: 0.2023 - precision: 0.9523 - recall: 0.9440 - val_accuracy: 0.9547 - val_loss: 0.1505 - val_precision: 0.9616 - val_recall: 0.9700 - learning_rate: 0.0010
+Epoch 3/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9511 - loss: 0.1539 - precision: 0.9675 - recall: 0.9579 - val_accuracy: 0.9572 - val_loss: 0.1283 - val_precision: 0.9747 - val_recall: 0.9600 - learning_rate: 0.0010
+Epoch 4/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9621 - loss: 0.1258 - precision: 0.9748 - recall: 0.9674 - val_accuracy: 0.9660 - val_loss: 0.1009 - val_precision: 0.9846 - val_recall: 0.9635 - learning_rate: 0.0010
+Epoch 5/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9692 - loss: 0.1059 - precision: 0.9804 - recall: 0.9728 - val_accuracy: 0.9731 - val_loss: 0.0858 - val_precision: 0.9799 - val_recall: 0.9793 - learning_rate: 0.0010
+Epoch 6/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9752 - loss: 0.0901 - precision: 0.9837 - recall: 0.9786 - val_accuracy: 0.9696 - val_loss: 0.1025 - val_precision: 0.9815 - val_recall: 0.9722 - learning_rate: 0.0010
+Epoch 7/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9781 - loss: 0.0820 - precision: 0.9851 - recall: 0.9815 - val_accuracy: 0.9836 - val_loss: 0.0674 - val_precision: 0.9858 - val_recall: 0.9894 - learning_rate: 0.0010
+Epoch 8/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9805 - loss: 0.0760 - precision: 0.9869 - recall: 0.9835 - val_accuracy: 0.9808 - val_loss: 0.0739 - val_precision: 0.9922 - val_recall: 0.9786 - learning_rate: 0.0010
+Epoch 9/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9829 - loss: 0.0706 - precision: 0.9893 - recall: 0.9847 - val_accuracy: 0.9828 - val_loss: 0.0681 - val_precision: 0.9872 - val_recall: 0.9867 - learning_rate: 0.0010
+Epoch 10/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 58s 16ms/step - accuracy: 0.9838 - loss: 0.0680 - precision: 0.9889 - recall: 0.9865 - val_accuracy: 0.9838 - val_loss: 0.0679 - val_precision: 0.9936 - val_recall: 0.9818 - learning_rate: 0.0010
+Epoch 11/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9865 - loss: 0.0592 - precision: 0.9911 - recall: 0.9883 - val_accuracy: 0.9866 - val_loss: 0.0558 - val_precision: 0.9922 - val_recall: 0.9875 - learning_rate: 0.0010
+Epoch 12/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9873 - loss: 0.0562 - precision: 0.9919 - recall: 0.9888 - val_accuracy: 0.9866 - val_loss: 0.0548 - val_precision: 0.9930 - val_recall: 0.9866 - learning_rate: 0.0010
+Epoch 13/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9886 - loss: 0.0528 - precision: 0.9926 - recall: 0.9901 - val_accuracy: 0.9895 - val_loss: 0.0480 - val_precision: 0.9905 - val_recall: 0.9937 - learning_rate: 0.0010
+Epoch 14/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9885 - loss: 0.0530 - precision: 0.9924 - recall: 0.9901 - val_accuracy: 0.9888 - val_loss: 0.0469 - val_precision: 0.9914 - val_recall: 0.9917 - learning_rate: 0.0010
+Epoch 15/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9898 - loss: 0.0491 - precision: 0.9935 - recall: 0.9911 - val_accuracy: 0.9884 - val_loss: 0.0484 - val_precision: 0.9943 - val_recall: 0.9881 - learning_rate: 0.0010
+Epoch 16/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9897 - loss: 0.0482 - precision: 0.9932 - recall: 0.9911 - val_accuracy: 0.9934 - val_loss: 0.0368 - val_precision: 0.9944 - val_recall: 0.9956 - learning_rate: 0.0010
+Epoch 17/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9909 - loss: 0.0450 - precision: 0.9943 - recall: 0.9919 - val_accuracy: 0.9912 - val_loss: 0.0433 - val_precision: 0.9924 - val_recall: 0.9943 - learning_rate: 0.0010
+Epoch 18/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9909 - loss: 0.0457 - precision: 0.9942 - recall: 0.9919 - val_accuracy: 0.9927 - val_loss: 0.0400 - val_precision: 0.9964 - val_recall: 0.9925 - learning_rate: 0.0010
+Epoch 19/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 15ms/step - accuracy: 0.9912 - loss: 0.0437 - precision: 0.9946 - recall: 0.9919 - val_accuracy: 0.9959 - val_loss: 0.0296 - val_precision: 0.9958 - val_recall: 0.9980 - learning_rate: 0.0010
+Epoch 20/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9919 - loss: 0.0413 - precision: 0.9951 - recall: 0.9926 - val_accuracy: 0.9943 - val_loss: 0.0314 - val_precision: 0.9952 - val_recall: 0.9962 - learning_rate: 0.0010
+Epoch 21/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9920 - loss: 0.0410 - precision: 0.9955 - recall: 0.9924 - val_accuracy: 0.9930 - val_loss: 0.0354 - val_precision: 0.9947 - val_recall: 0.9946 - learning_rate: 0.0010
+Epoch 22/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9921 - loss: 0.0398 - precision: 0.9954 - recall: 0.9926 - val_accuracy: 0.9913 - val_loss: 0.0444 - val_precision: 0.9954 - val_recall: 0.9915 - learning_rate: 0.0010
+Epoch 23/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9926 - loss: 0.0383 - precision: 0.9954 - recall: 0.9933 - val_accuracy: 0.9924 - val_loss: 0.0415 - val_precision: 0.9958 - val_recall: 0.9926 - learning_rate: 0.0010
+Epoch 24/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 53s 14ms/step - accuracy: 0.9930 - loss: 0.0373 - precision: 0.9959 - recall: 0.9935 - val_accuracy: 0.9938 - val_loss: 0.0327 - val_precision: 0.9946 - val_recall: 0.9960 - learning_rate: 0.0010
+Epoch 25/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9963 - loss: 0.0264 - precision: 0.9976 - recall: 0.9968 - val_accuracy: 0.9978 - val_loss: 0.0221 - val_precision: 0.9976 - val_recall: 0.9990 - learning_rate: 5.0000e-04
+Epoch 26/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 81s 15ms/step - accuracy: 0.9969 - loss: 0.0231 - precision: 0.9979 - recall: 0.9973 - val_accuracy: 0.9978 - val_loss: 0.0197 - val_precision: 0.9986 - val_recall: 0.9980 - learning_rate: 5.0000e-04
+Epoch 27/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9968 - loss: 0.0223 - precision: 0.9979 - recall: 0.9972 - val_accuracy: 0.9973 - val_loss: 0.0200 - val_precision: 0.9985 - val_recall: 0.9975 - learning_rate: 5.0000e-04
+Epoch 28/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9970 - loss: 0.0211 - precision: 0.9982 - recall: 0.9973 - val_accuracy: 0.9975 - val_loss: 0.0183 - val_precision: 0.9984 - val_recall: 0.9977 - learning_rate: 5.0000e-04
+Epoch 29/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9972 - loss: 0.0200 - precision: 0.9981 - recall: 0.9977 - val_accuracy: 0.9971 - val_loss: 0.0233 - val_precision: 0.9966 - val_recall: 0.9990 - learning_rate: 5.0000e-04
+Epoch 30/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9972 - loss: 0.0199 - precision: 0.9982 - recall: 0.9975 - val_accuracy: 0.9956 - val_loss: 0.0239 - val_precision: 0.9968 - val_recall: 0.9965 - learning_rate: 5.0000e-04
+Epoch 31/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9971 - loss: 0.0194 - precision: 0.9981 - recall: 0.9974 - val_accuracy: 0.9970 - val_loss: 0.0189 - val_precision: 0.9976 - val_recall: 0.9980 - learning_rate: 5.0000e-04
+Epoch 32/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9974 - loss: 0.0182 - precision: 0.9983 - recall: 0.9978 - val_accuracy: 0.9970 - val_loss: 0.0202 - val_precision: 0.9967 - val_recall: 0.9988 - learning_rate: 5.0000e-04
+Epoch 33/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 82s 15ms/step - accuracy: 0.9969 - loss: 0.0207 - precision: 0.9979 - recall: 0.9973 - val_accuracy: 0.9909 - val_loss: 0.0271 - val_precision: 0.9978 - val_recall: 0.9884 - learning_rate: 5.0000e-04
+Epoch 34/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9984 - loss: 0.0141 - precision: 0.9989 - recall: 0.9986 - val_accuracy: 0.9979 - val_loss: 0.0144 - val_precision: 0.9988 - val_recall: 0.9980 - learning_rate: 2.5000e-04
+Epoch 35/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9984 - loss: 0.0135 - precision: 0.9989 - recall: 0.9987 - val_accuracy: 0.9988 - val_loss: 0.0126 - val_precision: 0.9988 - val_recall: 0.9994 - learning_rate: 2.5000e-04
+Epoch 36/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 58s 16ms/step - accuracy: 0.9984 - loss: 0.0133 - precision: 0.9989 - recall: 0.9987 - val_accuracy: 0.9982 - val_loss: 0.0146 - val_precision: 0.9985 - val_recall: 0.9987 - learning_rate: 2.5000e-04
+Epoch 37/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 16ms/step - accuracy: 0.9985 - loss: 0.0127 - precision: 0.9989 - recall: 0.9988 - val_accuracy: 0.9988 - val_loss: 0.0119 - val_precision: 0.9986 - val_recall: 0.9996 - learning_rate: 2.5000e-04
+Epoch 38/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9986 - loss: 0.0122 - precision: 0.9990 - recall: 0.9989 - val_accuracy: 0.9978 - val_loss: 0.0147 - val_precision: 0.9985 - val_recall: 0.9981 - learning_rate: 2.5000e-04
+Epoch 39/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9989 - loss: 0.0113 - precision: 0.9992 - recall: 0.9991 - val_accuracy: 0.9986 - val_loss: 0.0116 - val_precision: 0.9983 - val_recall: 0.9996 - learning_rate: 2.5000e-04
+Epoch 40/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9985 - loss: 0.0126 - precision: 0.9988 - recall: 0.9989 - val_accuracy: 0.9962 - val_loss: 0.0199 - val_precision: 0.9982 - val_recall: 0.9960 - learning_rate: 2.5000e-04
+Epoch 41/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 58s 16ms/step - accuracy: 0.9985 - loss: 0.0116 - precision: 0.9990 - recall: 0.9988 - val_accuracy: 0.9982 - val_loss: 0.0128 - val_precision: 0.9986 - val_recall: 0.9987 - learning_rate: 2.5000e-04
+Epoch 42/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 16ms/step - accuracy: 0.9984 - loss: 0.0121 - precision: 0.9988 - recall: 0.9987 - val_accuracy: 0.9986 - val_loss: 0.0118 - val_precision: 0.9984 - val_recall: 0.9995 - learning_rate: 2.5000e-04
+Epoch 43/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9987 - loss: 0.0115 - precision: 0.9991 - recall: 0.9990 - val_accuracy: 0.9978 - val_loss: 0.0138 - val_precision: 0.9971 - val_recall: 0.9996 - learning_rate: 2.5000e-04
+Epoch 44/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9985 - loss: 0.0117 - precision: 0.9988 - recall: 0.9989 - val_accuracy: 0.9987 - val_loss: 0.0101 - val_precision: 0.9985 - val_recall: 0.9996 - learning_rate: 2.5000e-04
+Epoch 45/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9986 - loss: 0.0114 - precision: 0.9989 - recall: 0.9989 - val_accuracy: 0.9975 - val_loss: 0.0139 - val_precision: 0.9980 - val_recall: 0.9982 - learning_rate: 2.5000e-04
+Epoch 46/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 15ms/step - accuracy: 0.9986 - loss: 0.0111 - precision: 0.9990 - recall: 0.9989 - val_accuracy: 0.9976 - val_loss: 0.0146 - val_precision: 0.9987 - val_recall: 0.9977 - learning_rate: 2.5000e-04
+Epoch 47/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 58s 16ms/step - accuracy: 0.9988 - loss: 0.0104 - precision: 0.9991 - recall: 0.9990 - val_accuracy: 0.9975 - val_loss: 0.0148 - val_precision: 0.9972 - val_recall: 0.9990 - learning_rate: 2.5000e-04
+Epoch 48/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9984 - loss: 0.0115 - precision: 0.9988 - recall: 0.9988 - val_accuracy: 0.9985 - val_loss: 0.0111 - val_precision: 0.9990 - val_recall: 0.9987 - learning_rate: 2.5000e-04
+Epoch 49/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9989 - loss: 0.0097 - precision: 0.9993 - recall: 0.9991 - val_accuracy: 0.9984 - val_loss: 0.0114 - val_precision: 0.9986 - val_recall: 0.9989 - learning_rate: 2.5000e-04
+Epoch 50/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9992 - loss: 0.0088 - precision: 0.9993 - recall: 0.9995 - val_accuracy: 0.9989 - val_loss: 0.0096 - val_precision: 0.9988 - val_recall: 0.9996 - learning_rate: 1.2500e-04
+Epoch 51/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9994 - loss: 0.0077 - precision: 0.9995 - recall: 0.9996 - val_accuracy: 0.9990 - val_loss: 0.0099 - val_precision: 0.9989 - val_recall: 0.9996 - learning_rate: 1.2500e-04
+Epoch 52/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9993 - loss: 0.0077 - precision: 0.9994 - recall: 0.9995 - val_accuracy: 0.9988 - val_loss: 0.0105 - val_precision: 0.9991 - val_recall: 0.9990 - learning_rate: 1.2500e-04
+Epoch 53/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9993 - loss: 0.0076 - precision: 0.9995 - recall: 0.9995 - val_accuracy: 0.9988 - val_loss: 0.0098 - val_precision: 0.9989 - val_recall: 0.9993 - learning_rate: 1.2500e-04
+Epoch 54/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9992 - loss: 0.0073 - precision: 0.9995 - recall: 0.9993 - val_accuracy: 0.9986 - val_loss: 0.0112 - val_precision: 0.9987 - val_recall: 0.9992 - learning_rate: 1.2500e-04
+Epoch 55/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 55s 15ms/step - accuracy: 0.9992 - loss: 0.0076 - precision: 0.9994 - recall: 0.9993 - val_accuracy: 0.9988 - val_loss: 0.0086 - val_precision: 0.9990 - val_recall: 0.9992 - learning_rate: 1.2500e-04
+Epoch 56/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 54s 15ms/step - accuracy: 0.9994 - loss: 0.0074 - precision: 0.9995 - recall: 0.9995 - val_accuracy: 0.9990 - val_loss: 0.0080 - val_precision: 0.9994 - val_recall: 0.9990 - learning_rate: 1.2500e-04
+Epoch 57/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 57s 15ms/step - accuracy: 0.9992 - loss: 0.0072 - precision: 0.9995 - recall: 0.9993 - val_accuracy: 0.9980 - val_loss: 0.0122 - val_precision: 0.9985 - val_recall: 0.9985 - learning_rate: 1.2500e-04
+Epoch 58/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 80s 15ms/step - accuracy: 0.9992 - loss: 0.0078 - precision: 0.9994 - recall: 0.9994 - val_accuracy: 0.9989 - val_loss: 0.0088 - val_precision: 0.9990 - val_recall: 0.9993 - learning_rate: 1.2500e-04
+Epoch 59/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 60s 16ms/step - accuracy: 0.9993 - loss: 0.0073 - precision: 0.9996 - recall: 0.9994 - val_accuracy: 0.9985 - val_loss: 0.0099 - val_precision: 0.9991 - val_recall: 0.9986 - learning_rate: 1.2500e-04
+Epoch 60/60
+3683/3683 ━━━━━━━━━━━━━━━━━━━━ 56s 15ms/step - accuracy: 0.9992 - loss: 0.0071 - precision: 0.9995 - recall: 0.9993 - val_accuracy: 0.9992 - val_loss: 0.0078 - val_precision: 0.9991 - val_recall: 0.9996 - learning_rate: 1.2500e-04
+
+✓ Training complete!
+
+============================================================
+MODEL EVALUATION @ THRESHOLD = 0.5
+============================================================
+1842/1842 ━━━━━━━━━━━━━━━━━━━━ 7s 4ms/step
+
+Classification Report (threshold = 0.5):
+              precision    recall  f1-score   support
+
+    Non-Fall     0.9993    0.9983    0.9988     20094
+        Fall     0.9991    0.9996    0.9994     38832
+
+    accuracy                         0.9992     58926
+   macro avg     0.9992    0.9990    0.9991     58926
+weighted avg     0.9992    0.9992    0.9992     58926
+
+
+ROC-AUC Score: 0.9999
+
+Confusion Matrix (threshold = 0.5):
+[[20060    34]
+ [   15 38817]]
+
+============================================================
+SEARCHING BEST THRESHOLD FOR MAX F1 (FALL CLASS)
+============================================================
+
+Best threshold for FALL F1: 0.440
+Fall Precision: 0.9991
+Fall Recall   : 0.9997
+Fall F1-Score : 0.9994
+
+Confusion Matrix (best threshold for FALL F1):
+[[20059    35]
+ [   12 38820]]
+
+============================================================
+CREATING VISUALIZATIONS
+============================================================
+WARNING:absl:You are saving your model as an HDF5 file via `model.save()` or `keras.saving.save_model(model)`. This file format is considered legacy. We recommend using instead the native Keras format, e.g. `model.save('my_model.keras')` or `keras.saving.save_model(model, 'my_model.keras')`. 
+
+✓ Visualizations complete!
+
+============================================================
+SAVING MODEL
+============================================================
+✓ Model saved as fall_detection_gru_model_optimized.h5
+
+============================================================
+ALL DONE! 🎉
+============================================================
